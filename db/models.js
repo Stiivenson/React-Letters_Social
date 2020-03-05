@@ -1,3 +1,5 @@
+/*МОДЕЛЬ ДАННЫХ, ПОДДЕРЖИВАЕМАЯ СЕРВЕРОМ*/
+
 import uuid from 'uuid/v4';
 
 export class User {
@@ -9,6 +11,7 @@ export class User {
     }
 }
 
+//Класс, создающий структуру поста
 export class Post {
     constructor(config) {
         this.id = config.id || uuid();

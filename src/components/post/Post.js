@@ -1,4 +1,4 @@
-/*РАЗМЕЩЕНИЕ ПОСТОВ = ЛЕНТА */
+/*РАЗМЕЩЕНИЕ ПОСТОВ = ЛЕНТА*/
 
 import React, { Component } from "react";
 import PropTypes from "prop-types";
@@ -42,7 +42,6 @@ export class Post extends Component {
         API.fetchPost(id)
             .then(res => res.json())
             .then(post => {
-                console.log(post);
                 this.setState(() => ({post}));
             });
     }

@@ -15,6 +15,7 @@ import Ad from './components/ad/Ad';
 import Nav from './components/nav/navbar';
 import Welcome from './components/welcome/Welcome';
 import Post from './components/post/Post';
+import CreatePost from './components/post/Create';
 
 /**
  * The app component serves as a root for the project and renders either children,
@@ -78,6 +79,23 @@ class App extends Component {
         });
     }
 
+    //Добавление нового поста
+    createNewPost(post){
+        return API.createPost(post) //Применение API для создания сообщения
+            .then(res => res.json())
+            .then(newPost => { //Обновление состояния с использованием нового сообщения
+                this.setState(prevState => {
+                    return{
+                        //Конкатенация нового сообщения и проверка, что сообщения отсортированы
+                        posts: orderBy(prevState.posts.concat(newPost), 'date', 'desc')
+                    };
+                });
+            })
+            .catch(err => {
+                this.setState(() => ({error:err}));
+            });
+    }
+
     render(){
         return(
             <div className='app'>
@@ -90,6 +108,7 @@ class App extends Component {
                     <div className='home'>
                         <Welcome/>
                         <div>
+                            <CreatePost onSubmit={this.createNewPost}/>
                             {this.state.posts.length && (
                                 <div className='posts'>
                                     {this.state.posts.map(({id}) => ( //Итерация по извлеченным сообщениям + отобрежение Post для каждого
