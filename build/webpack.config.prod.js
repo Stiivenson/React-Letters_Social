@@ -100,10 +100,6 @@ module.exports = {
                 use: 'file-loader?name=[name].[ext]'
             },
             {
-                test: /\.json$/,
-                use: 'json-loader'
-            },
-            {
                 test: /\.ico$/,
                 use: 'file-loader?name=[name].[ext]'
             }

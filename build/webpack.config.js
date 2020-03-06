@@ -56,7 +56,7 @@ module.exports = {
         })
     ],
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.(eot|svg|woff|woff2|otf|ttf)$/,
                 exclude: /node_modules/,
@@ -72,7 +72,6 @@ module.exports = {
             },
             { test: /\.(jpe?g|png|gif)$/i, loaders: ['file-loader'] },
             { test: /\.ico$/, loader: 'file-loader?name=[name].[ext]' },
-            { test: /\.json$/, loader: 'json-loader' },
             {
                 test: /(\.css|\.scss)$/,
                 loaders: ['style-loader', 'css-loader?sourceMap', 'sass-loader?sourceMap']
