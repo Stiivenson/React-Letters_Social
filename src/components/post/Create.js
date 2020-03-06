@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 
 //Модуль фильтрации нецензурщины
 import Filter from 'bad-words';
+import DisplayMap from "../map/DisplayMap";
 const filter = new Filter();
 
 class CreatePost extends Component{
@@ -64,6 +65,7 @@ class CreatePost extends Component{
                 <div>
                     <button onClick={this.handleSubmit}>Post</button>
                 </div>
+                <DisplayMap/>
             </div>
         );
     }
