@@ -28,7 +28,7 @@
       "ENDPOINT": "http://localhost:3500",
       "GOOGLE_API_KEY": "key",
       "FIREBASE_AUTH_DOMAIN": "url",
-      "MAPBOX_API_TOKEN": "token"
+      "MAPBOX_API_TOKEN": "pk.eyJ1Ijoic3RpaXZlbnNvbiIsImEiOiJjazdmc3NsODcwNXJ0M2VtcDJ5c3gxOXIwIn0.MCkMjRPyfzSZVMqMNu_VnA"
     }
   },
   "dependencies": {

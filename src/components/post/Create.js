@@ -17,7 +17,14 @@ class CreatePost extends Component{
         super(props);
         this.state={
             content:'',
-            valid: false //Свойство проверки валидации введенного текста
+            valid: false, //Свойство проверки валидации введенного текста
+            showLocationPicker: false, //Свойства для отслеживания местоположения
+            location:{
+                lat: 34.1535641,
+                lng: -118.1428115,
+                name: null
+            },
+            locationSelected: false
         }
         this.handlePostChange = this.handlePostChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
