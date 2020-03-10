@@ -25,30 +25,30 @@ export default class LocationTypeAhead extends Component{
         this.handleSearchChange = this.handleSearchChange.bind(this);
         this.hanldeSelectLocation = this.hanldeSelectLocation.bind(this);
         this.resetSearch = this.resetSearch.bind(this);
-    }
+    };
 
-    //Проверка, поддерживает ли браузер геолокацию
+    //Определение местоположения по геолокации
     attemptGeoLocation(){
+        console.log('attemptGeoLocation');
         if('geolocation' in navigator){
             navigator.geolocation.getCurrentPosition(   //Получение текущей позиции польз. устройства
                 ({coords}) => {                    
                     const {latitude, longitude} = coords;   //Возвращение коорд. для использования                   
-                    this.mapbox.geocodeReverse({latitude, longitude},    //Применение Mapbox для геокодирования координат
-                        {}).then(loc => {
+                    this.mapbox.geocodeReverse({latitude, longitude}, {}).then(loc => { //Применение Mapbox для геокодирования координат
                             if(!loc.entity.features || !loc.entity.features.length) return;
                             const feature = loc.entity.features[0]; //Получение первого ближайшего свойства                            
                             const [lng,lat] = feature.center;   //Выдача широты и долготы
-                            const currenLocation = {    //Создание местоположения и обновление состояния
+                            const currentLocation = {    //Создание местоположения и обновление состояния
                                 name: feature.place_name,
                                 lat,
                                 lng
                             };
                             this.setState(() => ({
-                                locations: [currenLocation],
-                                selectedLocation: currenLocation,
-                                text: currenLocation.name
+                                locations: [currentLocation],
+                                selectedLocation: currentLocation,
+                                text: currentLocation.name
                             }));
-                            handleLocationUpdate(currenLocation);
+                            this.handleLocationUpdate(currentLocation);
                         });
                 },
                 null,
@@ -62,6 +62,7 @@ export default class LocationTypeAhead extends Component{
     }
     //Обновление состояния при выборе местоположения
     handleLocationUpdate(location){
+        console.log('handleLocationUpdate');
         this.setState(() => {
             return{
                 text: location.name,
@@ -71,9 +72,11 @@ export default class LocationTypeAhead extends Component{
         });
         this.props.onLocationUpdate(location);
     }
-    handleSearchChange(e){
-        const text = e.target.value;     //Извлекаем текст при вводе в поле поиска
-        this.setState=(() => ({text}));
+    //Вывод списка мест при вводе в поле поиска
+    handleSearchChange(event){
+        console.log('handleSearchChange');
+        const text = event.target.value;     //Извлекаем текст при вводе в поле поиска
+        this.setState(() => ({text}));
         if(!text) return;
         this.mapbox.geocodeForward(text, {}).then(loc => {   //Используем Mapbox для поиска местоположения с учетом ввода пользователя 
             if(!loc.entity.features || !loc.entity.features.length){
@@ -87,15 +90,17 @@ export default class LocationTypeAhead extends Component{
                     lng
                 };
             });
-            this.setState(() => ({locations})); //Обновление состояния с новым местоположением
+            this.setState(() => ({locations})); //Обновление состояния с новым местоположением 
         });
     }
     //Выбрано местоположение - локация передается вверх
     hanldeSelectLocation(){
+        console.log('hanldeSelectLocation');
         this.props.onLocationSelect(this.state.selectedLocation);
     }
     //Сброс состояния компонента
     resetSearch(){
+        console.log('resetSearch');
         this.setState(() => {
             return{
                 text:'',
@@ -105,7 +110,14 @@ export default class LocationTypeAhead extends Component{
         });
     }
 
+    componentDidUpdate(prevProps, prevState){
+        console.log('componentDidUpdate');
+        if(prevState.text === '' && prevState.locations.length){
+            this.setState(() => ({locations: []}));
+        }
+    }
     componentWillUnmount(){
+        console.log('componentWillUnmount');
         this.resetSearch();
     }
 
@@ -113,11 +125,11 @@ export default class LocationTypeAhead extends Component{
         return[
            <div key='location-typeahead'
                 className='location-typeahead'>
-                <i  className='fa fa-location-arrow'
-                    onClick={this.attemptGeoLocation} />
-                <input onChange={this.handleSearchChange}
+                <i  className='fa fa-location-arrow' onClick={this.attemptGeoLocation} />
+                <input 
                     type='text'
                     placeholder='Enter a location...'
+                    onChange={this.handleSearchChange}
                     value={this.state.text} />
                 <button className='open'
                     disabled={!this.state.selectedLocation}
@@ -136,7 +148,7 @@ export default class LocationTypeAhead extends Component{
                                     className='result'
                                     onClick={e => { //При выборе позции - установить местоположение
                                         e.preventDefault();
-                                        handleLocationUpdate(location);
+                                        this.handleLocationUpdate(location);
                                     }}
                                 >
                                     {location.name}

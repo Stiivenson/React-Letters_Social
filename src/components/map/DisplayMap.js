@@ -127,8 +127,7 @@ export default class DisplayMap extends Component{
             </div>,
             //Если выбран режим "Только отображение", указываются название и индикатор местоположения
             this.props.displayOnly && (
-                <div key='location-description'
-                    className='locationdescription'>
+                <div key='location-description' className='location-description'>
                     <i className='location-icon fa fa-location-arrow'/>
                     <span className='location-name'>{this.state.location.name}</span>
                 </div>
