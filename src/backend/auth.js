@@ -1,14 +1,29 @@
 import { firebase } from './core';
 
-const github = new firebase.auth.GithubAuthProvider();
-github.addScope('user:email');
+const google = new firebase.auth.GoogleAuthProvider(); //Вход через сервис Google
 
 export function logUserOut() {
     return firebase.auth().signOut();
 }
 
-export function loginWithGithub() {
-    return firebase.auth().signInWithPopup(github);
+export function loginWithGoogle() {
+    return firebase.auth().signInWithPopup(google).then(function(result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        let token = result.credential.accessToken;
+        console.log('token ', token);        
+        // The signed-in user info.
+        let user = result.user;
+        console.log('user ', user);
+      }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log('errorMessage ', errorMessage);
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+      });
 }
 
 export function getFirebaseUser() {

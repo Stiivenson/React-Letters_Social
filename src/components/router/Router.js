@@ -15,6 +15,7 @@ export default class Router extends Component{
     constructor(props){
         super(props);
         this.routes = {}; //Объект для хранения маршрутов
+        this.addRoutes(props.children); //Добавляем дочерние компоненты для Роутов      
         this.router = enroute(this.routes); //Роутер задействует возвращаемое enroute значение
     }
 
@@ -33,14 +34,14 @@ export default class Router extends Component{
         const route = this.normalizeRoute(path, parent); //Проверка, что URL-путь настроен правильно
 
         if(children){ //Если в текущем компоненте Route есть другие дочерние компоненты - процесс повторяется, в маршрут передаеся родительский компонент
-            this.addRoutes(childern, {route, render});            
+            this.addRoutes(children, {route, render});            
         }
 
         this.routes[this.cleanPath(route)] = render; //cleanPath для создания маршрута в объекте маршрутов и назначение ему законченной функции
     }
-    //Добавление путей к дополнительным потомкам
+    //Добавление путей к потомкам
     addRoutes(routes, parent){
-        React.childern.forEach(routes, route => this.addRoute(route, parent));
+        React.Children.forEach(routes, route => this.addRoute(route, parent));
     }
 
     //Функция удаления двойных слешей из маршрута
@@ -52,13 +53,13 @@ export default class Router extends Component{
         if (path[0] === '/') { //Раз символ '/' - можно просто вернуть его, не нужно присоединять к предку
             return path;
         }
-        if (parent == null) { //Если ни один из предков не предоставлен, path не с чем соединять, можно его вернуть
+        if (!parent) { //Если ни один из предков не предоставлен, path не с чем соединять, можно его вернуть
             return path;
-        }
+        }          
         return `${parent.route}/${path}`; //Есть предок - добавляем путь предка, объединяя их
     }
 
-    render() {
+    render() {    
         const {location} = this.props; //Передача текущего положения роутеру в качестве свойства
         invariant(location, '<Router> needs a location to work!'); //Проверка, что местоположение указано
         return this.router(location); //Применяем роутер для нахождения компонента по заданному местоположению

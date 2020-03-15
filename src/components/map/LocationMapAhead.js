@@ -29,7 +29,6 @@ export default class LocationTypeAhead extends Component{
 
     //Определение местоположения по геолокации
     attemptGeoLocation(){
-        console.log('attemptGeoLocation');
         if('geolocation' in navigator){
             navigator.geolocation.getCurrentPosition(   //Получение текущей позиции польз. устройства
                 ({coords}) => {                    
@@ -62,7 +61,6 @@ export default class LocationTypeAhead extends Component{
     }
     //Обновление состояния при выборе местоположения
     handleLocationUpdate(location){
-        console.log('handleLocationUpdate');
         this.setState(() => {
             return{
                 text: location.name,
@@ -74,7 +72,6 @@ export default class LocationTypeAhead extends Component{
     }
     //Вывод списка мест при вводе в поле поиска
     handleSearchChange(event){
-        console.log('handleSearchChange');
         const text = event.target.value;     //Извлекаем текст при вводе в поле поиска
         this.setState(() => ({text}));
         if(!text) return;
@@ -95,12 +92,10 @@ export default class LocationTypeAhead extends Component{
     }
     //Выбрано местоположение - локация передается вверх
     hanldeSelectLocation(){
-        console.log('hanldeSelectLocation');
         this.props.onLocationSelect(this.state.selectedLocation);
     }
     //Сброс состояния компонента
     resetSearch(){
-        console.log('resetSearch');
         this.setState(() => {
             return{
                 text:'',
@@ -111,13 +106,11 @@ export default class LocationTypeAhead extends Component{
     }
 
     componentDidUpdate(prevProps, prevState){
-        console.log('componentDidUpdate');
         if(prevState.text === '' && prevState.locations.length){
             this.setState(() => ({locations: []}));
         }
     }
     componentWillUnmount(){
-        console.log('componentWillUnmount');
         this.resetSearch();
     }
 

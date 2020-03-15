@@ -1,3 +1,4 @@
+/*СЕРВЕРНАЯ ЧАСТЬ FIREBASE*/
 import firebase from 'firebase';
 
 const config = {

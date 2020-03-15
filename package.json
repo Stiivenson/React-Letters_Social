@@ -26,8 +26,8 @@
       "__DEV__": true,
       "NODE_ENV": "test",
       "ENDPOINT": "http://localhost:3500",
-      "GOOGLE_API_KEY": "key",
-      "FIREBASE_AUTH_DOMAIN": "url",
+      "GOOGLE_API_KEY": "AIzaSyD1vBTIjYGEA37hsJXkPso3lllCRGO0mK4",
+      "FIREBASE_AUTH_DOMAIN": "letters-social-by-stiiv.firebaseapp.com",
       "MAPBOX_API_TOKEN": "pk.eyJ1Ijoic3RpaXZlbnNvbiIsImEiOiJjazdmc3NsODcwNXJ0M2VtcDJ5c3gxOXIwIn0.MCkMjRPyfzSZVMqMNu_VnA"
     }
   },

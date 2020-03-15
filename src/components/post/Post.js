@@ -12,6 +12,7 @@ import Comments from "../comment/Comments";
 import UserHeader from "../post/UserHeader";
 import Loader from "../Loader";
 import DisplayMap from "../map/DisplayMap";
+import RouterLink from '../router/Link';
 
 export class Post extends Component {
     static propTypes = {
@@ -52,32 +53,28 @@ export class Post extends Component {
         this.loadPost(this.props.id);
     }
 
-    render(){
-        if(!this.state.post){
-            //Если сообщение не загружено - показываем загрузчик
-            return <Loader/>;
-        }
-        return(
-            <div className='post'>
-                <UserHeader date={this.state.post.date}
-                            user={this.state.post.user}/>
-                <Content post={this.state.post}/>
-                <Image post={this.state.post}/>
-                <Link link={this.state.post.link}/>
-            
-                {this.state.post.location && ( //Если сообщение имеет связанное местоположение - его отображение и активизация режима displayOnly
-                    <DisplayMap displayOnly location={this.state.post.location} />
-                )}
-                
-                <PostActionSection showComments={this.state.showComments}/>
+    render() {
+        return this.state.post ? (
+            <div className="post">
+                <RouterLink to={`/posts/${this.state.post.id}`}>
+                    <span>
+                        <UserHeader date={this.state.post.date} user={this.state.post.user} />
+                        <Content post={this.state.post} />
+                        <Image post={this.state.post} />
+                        <Link link={this.state.post.link} />
+                    </span>
+                </RouterLink>
+                {this.state.post.location && <DisplayMap location={this.state.post.location} />}
+                <PostActionSection showComments={this.state.showComments} />
                 <Comments
                     comments={this.state.comments}
                     show={this.state.showComments}
                     post={this.state.post}
-                    user={this.state.user}
+                    handleSubmit={this.createComment}
+                    user={this.props.user}
                 />
             </div>
-        );
+        ) : null;
     }
 }
 
