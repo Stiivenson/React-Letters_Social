@@ -1,3 +1,4 @@
+/*Модуль для работы с API HTML5 History, позволяет задействовать навигацию с изменением состояния, без перезагрузки страницы*/
 import {createBrowserHistory} from 'history';
 
 const history = createBrowserHistory(); //Назначение одного экза history доступным приложению

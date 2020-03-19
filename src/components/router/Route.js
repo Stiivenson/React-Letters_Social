@@ -11,7 +11,6 @@ class Route extends Component{
     };
 
     render() {
-        console.log('render Route');
         //Компонент Route не должен ничего отображать, invariant следит за этим
         return invariant(false, '<Route> elements only for config, not render')
     }

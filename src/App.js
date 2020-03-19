@@ -1,6 +1,7 @@
 //Библиотеки, необходимые для работы компонента
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from "react-redux";
 
 import ErrorMessage from './components/error/Error'; //Импорт сообщения об ошибке и компонентов загрузчика
 import Loader from './components/Loader';
@@ -16,57 +17,45 @@ import Nav from './components/nav/navbar';
  */
 
 class App extends Component {
-    constructor(props) {
-        super(props);        
-        this.state = {
-            error: null,
-            loading: false,            
-        };
-    }
-    static propTypes = {
-        children: PropTypes.node,
-    };
-
-    //Настройка границы ошибки, для их обработки
-    componentDidCatch(err, info){
-        console.log(err);
-        console.log(info);
-        this.setState(() => ({
-            error: err
-        }));        
-    }
-
-    componentWillMount(){
-        console.log('App-Mount-user: ', this.props.user);
-    }
-
-    componentDidUpdate(){
-        console.log('App-Update-user: ', this.props.user);
+    componentDidMount() {
+        // Remove the initial state that was embedded with the intial HTML sent by the server
+        const embeddedState = document.getElementById('initialState');
+        if (embeddedState) {
+            embeddedState.remove();
+        }
     }
   
-    render(){
-        if(this.state.error){
-            return(
-                <div className='app'>
-                    <ErrorMessage error={this.state.error}/>
+    render() {
+        if (this.props.error) {
+            return (
+                <div className="app">
+                    <ErrorMessage error={this.props.error} />
                 </div>
             );
         }
-        return(
-            <div className='app'>
-                <Nav 
-                    user={this.props.user} //Передача свойств пользователя - для Firebase
-                /> 
-                {this.state.loading ? ( //При загрузке рендерится загрузчик, а не тело приложения
-                    <div className='loading'>
-                        <Loader/>
+        return (
+            <div className="app">
+                <Nav />
+                {this.props.loading ? (
+                    <div className="loading">
+                        <Loader />
                     </div>
                 ) : (
-                    this.props.children //Использование props.children для вывода текущего активного маршрута
+                    this.props.children
                 )}
             </div>
         );
     }
 }
 
-export default App;
+App.propTypes = {
+    children: PropTypes.node
+};
+
+export const mapStateToProps = state => {
+    return {
+        error: state.error,
+        loading: state.loading
+    };
+};
+export default connect(mapStateToProps)(App);

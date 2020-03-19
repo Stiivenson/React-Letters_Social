@@ -1,101 +1,94 @@
+//MAIN CORE
 import React from 'react';
 import { render } from 'react-dom';
+import { Provider } from "react-redux";
 
 import * as API from './shared/http';
-import App from './App';
-import { Home } from './pages/home';
-import SignlePost from './pages/post';
+import { getFirebaseToken, getFirebaseUser } from './backend/auth';
+import { firebase } from './backend/core';
+
 import Router from './components/router/Router';
 import Route from './components/router/Route';
 import {history} from './history/history';
+
+import App from './App';
+import { Home } from './pages/home';
+import SignlePost from './pages/post';
+import NotFound from './pages/404';
+import { Login } from './pages/login';
+
+import configureStore from './store/ConfigureStore';
+import initialReduxState from "./constants/initialState";
+
+import { createError } from "./actions/error";
+import { loginSucces } from "./actions/auth";
+import { loaded, loading } from "./actions/loading";
 
 import './shared/crash';
 import './shared/service-worker';
 import './shared/vendor';
 // NOTE: this isn't ES*-compliant/possible, but works because we use Webpack as a build tool
 import './styles/styles.scss';
-import NotFound from './pages/404';
-import { Login } from './pages/login';
-import { getFirebaseToken } from './backend/auth';
-import { firebase } from './backend/core';
+
+const store = configureStore(initialReduxState);
 
 //Функция рендера приложения, оборачиваем метод render, чтобы передавать местоположение и callback
 export const renderApp = (state, callback = () => {}) => {
     render(
-        /*Оператор распространения JSX для заполнения местоположения для Router*/
-        <Router {...state}> 
-            <Route path="" component={App}> 
-                <Route path="/" component={Home} />
-                <Route path='/posts/:postId' component={SignlePost} />
-                <Route path="/login" component={Login} />
-                <Route path='*' component={NotFound} />
-            </Route>
-        </Router>,
+        <Provider store={store}>
+            <Router {...state}> 
+                <Route path="" component={App}> 
+                    <Route path="/" component={Home} />
+                    <Route path='/posts/:postId' component={SignlePost} />
+                    <Route path="/login" component={Login} />
+                    <Route path='*' component={NotFound} />
+                </Route>
+            </Router>
+        </Provider>,
         document.getElementById('app'), 
         callback
     );
 };
 
 //Объект состояния для отслеживания местоположения юзера
-let state = {
-    location: window.location.pathname,
-    user:{
-        authenticated: false,
-        profilePicture: null,
-        id: null,
-        name: null,
-        token: null
-    }
+let initialState = {
+    location: window.location.pathname
 };
 
-//renderApp(state);
+renderApp(initialState);
 
 //Сигнализация изменения местоположения и обновление роутера (рендер с новыми состояниями)
 history.listen(location => {
     const user = firebase.auth().currentUser;
-    console.log('renderApp-user: ',user);    
-    state = Object.assign({}, state, {location: user ? location.pathname : '/login'}); //Проверяем, существует ли юзер в FireBase
-    renderApp(state);
+    const newState = Object.assign(initialState, {location: user ? location.pathname : '/login'}) 
+    renderApp(newState);
 });
 
-//Реагируем на изменение состояния юзера
-firebase.auth().onAuthStateChanged(async user => {
-    if (!user) { //Юзера нет - идем на логин
-        state = {
-            location: state.location,
-            user: {
-                authenticated: false
-            }
-        };
-        return renderApp(state, () => {
-            history.push('/login');
-        });
-    }
-
-    const token = await getFirebaseToken(); //Получаем токен юзера
-    const res = await API.loadUser(user.uid); //Пытаемся получить юзера из API
-    let renderUser;
-
-    if (res.status === 404) { //Нет юзера - регистрируем его
-        const userPayload = {
-            name: user.displayName,
-            profilePicture: user.photoURL,
-            id: user.uid
-        };
-        renderUser = await API.createUser(userPayload).then(res => res.json());
-    } else {
-        renderUser = await res.json(); //Юзер есть - рендерим всё приложение
-    }
-    history.push('/'); //Идем на главную
-    state = Object.assign({}, state, { //Обновляем состояние
-        user: {
-            name: renderUser.name,
-            id: renderUser.id,
-            profilePicture: renderUser.profilePicture,
-            authenticated: true
-        },
-        token
-    });
-    console.log('onAuthStateChanged-user: ', user);
-    renderApp(state);
-});
+getFirebaseUser()
+    .then(async user => {
+        if (!user) {
+            return history.push('/login');
+        }
+        store.dispatch(loading());
+        const token = await getFirebaseToken();
+        const res = await API.loadUser(user.id);
+        if(res.status === 404){ //Если пользователя не существует - происходит регистрация
+            const userPayload = {
+                name: user.displayName,
+                profilePicture: user.photoUrl,
+                id: user.id
+            };
+            const newUser = await API.createUser(userPayload).then(res => res.json());
+            dispatch(loginSucces(newUser, token));
+            dispatch(loaded());
+            history.push('/');
+            return newUser;
+        }
+        
+        const exisitngUser = await res.json();
+        dispatch(loginSucces(exisitngUser, token));
+        dispatch(loaded());
+        history.push('/');
+        return exisitngUser;
+    })
+    .catch(err => createError(err));

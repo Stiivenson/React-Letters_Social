@@ -1,7 +1,8 @@
 /*ГЛАВНАЯ СТРАНИЦА ПРИЛОЖЕНИЯ*/
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 import parseLinkHeader from 'parse-link-header';
-import orderBy from 'lodash/orderBy';
+import orderBy from 'lodash/orderBy'; //Функция для сортировки сообщений
 
 import * as API from '../shared/http'; //Модуль API Letters - создание и извлечение сообщений
 import Ad from '../components/ad/Ad';
@@ -68,16 +69,15 @@ export class Home extends Component{
             <div className='home'>
                 <Welcome/>
                 <div>
-                    <CreatePost onSubmit={this.createNewPost}/>
-                    {this.state.posts.length && (
+                    <CreatePost />
+                    {this.props.posts && ( //Сопоставление сообщений
                         <div className='posts'>
-                            {this.state.posts.map(({id}) => ( //Итерация по извлеченным сообщениям + отобрежение Post для каждого
-                                <Post id={id} key={id}
-                                user={this.props.user}/>
+                            {this.props.posts.map(post => ( 
+                                <Post key={post.id} post={post}/>
                             ))}
                         </div>
                     )}
-                    <button className='block' onClick={this.getPosts}> 
+                    <button className='block'> 
                         Load more posts
                     </button>
                 </div>
@@ -95,3 +95,11 @@ export class Home extends Component{
         );
     }
 }
+
+//Сопоставление и сортировка сообщений
+export const mapStateToProps = state => {
+    const posts = orderBy(state.postIds.map(postIds => state.posts[postId]), 'data', 'desc');
+    return {posts};
+}
+
+export default connect(mapStateToProps)(Home);

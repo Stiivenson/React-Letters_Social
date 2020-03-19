@@ -1,9 +1,8 @@
-/*ОТОБРАЖЕНИЕ СООБЩЕНИЙ*/
+/*Отображение одного сообщения*/
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Post from '../components/post/Post';
-import Ad from '../components/ad/Ad';
 
 export class SignlePost extends Component {
     static propTypes={
@@ -12,7 +11,9 @@ export class SignlePost extends Component {
         })
     };
 
+    //Router перейдет сюда по адресу '/posts/:postId', где postId - id одного поста
     render(){
+        //Рендерим один пост, выбирая по полученному id
         return(
             <div className='signle-post'>
                 <Post id={this.props.params.postId}/>
